@@ -1,4 +1,10 @@
-package whiteboard;
+﻿/*
+ * @Author: Puffrora
+ * @Date:   2019-09-13 12:36:07
+ * @Last Modified by:   Puffrora
+ * @Last Modified time: 2019-10-06 09:31:23
+ */
+
 
 import java.awt.*;
 import java.awt.event.*;
@@ -218,63 +224,7 @@ public class WhiteBoard extends JFrame
 
     
     }
-    
-//    void clientCon(Socket client, int number) {
-//        Socket clientSocket = client;
-//            try{
-//                //连接成功后得到数据输出流
-////                os = new DataOutputStream(new BufferedOutputStream(client.getOutputStream()));
-//                os = new DataOutputStream(client.getOutputStream());
-//                oss = new ObjectOutputStream(clientSocket.getOutputStream());
-//                is = new DataInputStream(new BufferedInputStream(client.getInputStream()));
-//
-//            }  catch (IOException e) {
-//                e.printStackTrace();
-//            }   
-//            //x1,y1为起始点坐标，x2,y2为终点坐标。四个点的初始值设为0
-//
-//            int count = 0;
-//            while (true) {
-//                if(newOb != null) {
-//                    try {
-//
-//                        System.out.println(newOb.x1+" "+newOb.y2+" "+newOb.x2+" "+newOb.y2);
-//                        System.out.println(clientSocket.getPort()+"cacacaa"+clientSocket.getLocalPort());
-//                        System.out.println(number);
-//
-//                        ArrayList<Integer> coordinate = new ArrayList<Integer>();
-//                       
-////                            oss.writeObject(newOb);
-//                        coordinate.add(newOb.x1);
-//                        coordinate.add(newOb.y1);
-//                        coordinate.add(newOb.x2);
-//                        coordinate.add(newOb.y2);
-//                        for(int i = 0; i < 4; i++) {
-//                            os.writeInt(coordinate.get(i));
-//                            System.out.println("wrote " + i);
-//                        }
-//                        count+=1;
-//                        os.flush();
-////                        if(count == 20) {
-////                            os.flush();
-////                            count = 0;
-////                        }
-//
-//                        newOb = null;
-////                        int x1, x2, y1, y2;
-////                        x1=is.readInt();
-////                        y1=is.readInt();
-////                        x2=is.readInt();
-////                        y2=is.readInt();
-////                        Graphics g = this.getGraphics();
-////                        g.drawLine(x1, y1, x2, y2);
-//                    } catch (IOException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }   
+       
           
     public class ButtonHandlery implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -393,6 +343,7 @@ public class WhiteBoard extends JFrame
     }
 
     public void sendData(drawings newOb) throws IOException {
+    	//Sending data
     	os.writeInt(newOb.x1);
     	os.writeInt(newOb.y1);
     	os.writeInt(newOb.x2);
@@ -401,12 +352,15 @@ public class WhiteBoard extends JFrame
     }
     
     public void receiveData() throws IOException, ClassNotFoundException {
-		while (true) {
+		
+    	while (is.available()>0) {
+    		System.out.println("Receiving data");
 			int x1 = is.readInt();
 			int y1 = is.readInt();
 			int x2 = is.readInt();
 			int y2 = is.readInt();
 			Graphics drawer = this.getGraphics();
+			System.out.println("DRAWING");
 			drawer.drawLine(x1, y1, x2, y2);
 		}
 	}
@@ -489,7 +443,9 @@ public class WhiteBoard extends JFrame
         iArray.get(index).B = B;
         iArray.get(index).stroke = stroke;
     }
-
+    
+    
+    //Unused method
     public void createNewItemInClient(drawings infoOb) {
 
         iArray.get(index).x1 = infoOb.x1;
@@ -694,7 +650,3 @@ public class WhiteBoard extends JFrame
     }
 
 }
-
-
-
-
