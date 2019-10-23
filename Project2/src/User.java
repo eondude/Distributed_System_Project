@@ -7,20 +7,20 @@ public class User implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private String name = "Guest";
-	private int connectionCount;
+	private int id;
     Socket socket;
     
     public User(String myname) {
     	this.name= myname;
     }
-    public User(int connectionCount, String name,Socket socket) {
-        this.connectionCount = connectionCount;
+    public User(int id, String name,Socket socket) {
         this.name = name;
         this.socket = socket;
+        this.id = id;
     }
 
-    public int getConnectionCount() {
-        return connectionCount;
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -31,8 +31,8 @@ public class User implements Serializable {
         return socket;
     }
 
-    public void setConnectionCount(int connectionCount) {
-        this.connectionCount = connectionCount;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setName(String name) {

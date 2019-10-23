@@ -1,10 +1,4 @@
-﻿/*
- * @Author: Puffrora
- * @Date:   2019-09-13 12:36:07
- * @Last Modified by:   Puffrora
- * @Last Modified time: 2019-10-06 09:31:23
- */
-
+package whiteboard;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -49,27 +43,34 @@ public class WhiteBoard extends JFrame
     private ObjectInputStream dataInput;
     DataOutputStream os;
     DataInputStream is;
-    ObjectOutputStream oss;
+    ObjectOutputStream oos;
     int number = 0;
     Socket client;
     private static int counter = 0;
     private static int port = 9090;
     String userName;
-
+    
+    //Server side
     public WhiteBoard(String userName) {
     	super("Distributed WhiteBoard");
     	this.userName = userName;
     	creatWB();
+    	
     }
+    
+    //Client side
     public WhiteBoard(String userName, Socket client) throws IOException, ClassNotFoundException {
     	super("Distributed WhiteBoard");
     	os = new DataOutputStream(new BufferedOutputStream(client.getOutputStream()));
-        oss = new ObjectOutputStream(client.getOutputStream());
+       
+    	//oos = new ObjectOutputStream(client.getOutputStream());
         is = new DataInputStream(new BufferedInputStream(client.getInputStream()));
         dataOutput = new ObjectOutputStream(client.getOutputStream());
     	this.userName = userName;
     	this.client = client;
+    	System.out.println("Sockets created in the WB");
     	creatWB();
+    	System.out.println("Receiving data in WB");
     	receiveData();
     }
     
@@ -224,7 +225,63 @@ public class WhiteBoard extends JFrame
 
     
     }
-       
+    
+//    void clientCon(Socket client, int number) {
+//        Socket clientSocket = client;
+//            try{
+//                //è¿žæŽ¥æˆ�åŠŸå�Žå¾—åˆ°æ•°æ�®è¾“å‡ºæµ�
+////                os = new DataOutputStream(new BufferedOutputStream(client.getOutputStream()));
+//                os = new DataOutputStream(client.getOutputStream());
+//                oss = new ObjectOutputStream(clientSocket.getOutputStream());
+//                is = new DataInputStream(new BufferedInputStream(client.getInputStream()));
+//
+//            }  catch (IOException e) {
+//                e.printStackTrace();
+//            }   
+//            //x1,y1ä¸ºèµ·å§‹ç‚¹å��æ ‡ï¼Œx2,y2ä¸ºç»ˆç‚¹å��æ ‡ã€‚å››ä¸ªç‚¹çš„åˆ�å§‹å€¼è®¾ä¸º0
+//
+//            int count = 0;
+//            while (true) {
+//                if(newOb != null) {
+//                    try {
+//
+//                        System.out.println(newOb.x1+" "+newOb.y2+" "+newOb.x2+" "+newOb.y2);
+//                        System.out.println(clientSocket.getPort()+"cacacaa"+clientSocket.getLocalPort());
+//                        System.out.println(number);
+//
+//                        ArrayList<Integer> coordinate = new ArrayList<Integer>();
+//                       
+////                            oss.writeObject(newOb);
+//                        coordinate.add(newOb.x1);
+//                        coordinate.add(newOb.y1);
+//                        coordinate.add(newOb.x2);
+//                        coordinate.add(newOb.y2);
+//                        for(int i = 0; i < 4; i++) {
+//                            os.writeInt(coordinate.get(i));
+//                            System.out.println("wrote " + i);
+//                        }
+//                        count+=1;
+//                        os.flush();
+////                        if(count == 20) {
+////                            os.flush();
+////                            count = 0;
+////                        }
+//
+//                        newOb = null;
+////                        int x1, x2, y1, y2;
+////                        x1=is.readInt();
+////                        y1=is.readInt();
+////                        x2=is.readInt();
+////                        y2=is.readInt();
+////                        Graphics g = this.getGraphics();
+////                        g.drawLine(x1, y1, x2, y2);
+//                    } catch (IOException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }   
           
     public class ButtonHandlery implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -307,9 +364,7 @@ public class WhiteBoard extends JFrame
         }
 
     }
-    class mouseEvent2 implements MouseMotionListener{
-        
-        //在设置监听器的同时启动监听器对象的线程
+    class mouseEvent2 implements MouseMotionListener {
         public void mouseDragged(MouseEvent e) {
             statusBar.setText("     Mouse Dragged @:[" + e.getX() +
                     ", " + e.getY() + "]");
@@ -326,7 +381,7 @@ public class WhiteBoard extends JFrame
                 iArray.get(index).y2 = e.getY();
             }
             try {
-            	if(!userName.equals("Server")) {
+            	if(!userName.equals("Manager")) {
             		sendData(newOb);
             	}
 			} catch (IOException e1) {
@@ -343,25 +398,26 @@ public class WhiteBoard extends JFrame
     }
 
     public void sendData(drawings newOb) throws IOException {
-    	//Sending data
+    	System.out.println("Sending data");
     	os.writeInt(newOb.x1);
     	os.writeInt(newOb.y1);
     	os.writeInt(newOb.x2);
     	os.writeInt(newOb.y2);
         os.flush();
+        System.out.println("Receiving data");
+        
     }
     
     public void receiveData() throws IOException, ClassNotFoundException {
-		
-    	while (is.available()>0) {
-    		System.out.println("Receiving data");
+		while (true) {
+			System.out.println("Receiving data");
 			int x1 = is.readInt();
 			int y1 = is.readInt();
 			int x2 = is.readInt();
 			int y2 = is.readInt();
 			Graphics drawer = this.getGraphics();
-			System.out.println("DRAWING");
 			drawer.drawLine(x1, y1, x2, y2);
+			System.out.println("Data received");
 		}
 	}
 
@@ -443,9 +499,7 @@ public class WhiteBoard extends JFrame
         iArray.get(index).B = B;
         iArray.get(index).stroke = stroke;
     }
-    
-    
-    //Unused method
+
     public void createNewItemInClient(drawings infoOb) {
 
         iArray.get(index).x1 = infoOb.x1;
@@ -650,3 +704,7 @@ public class WhiteBoard extends JFrame
     }
 
 }
+
+
+
+
